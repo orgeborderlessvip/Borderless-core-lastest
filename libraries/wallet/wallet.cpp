@@ -3726,6 +3726,15 @@ vector< signed_transaction > wallet_api::import_balance( string name_or_id, cons
    return my->import_balance( name_or_id, wif_keys, broadcast );
 }
 
+vector< address > wallet_api::get_ptsaccount_address( string wif_key )
+{
+	vector< address > addrs;
+	optional< private_key_type > key = wif_to_key(wif_key);
+	FC_ASSERT(key.valid(), "Invalid private key");
+	fc::ecc::public_key pk = key->get_public_key();
+	addrs.push_back(pk);
+	return addrs;
+}
 namespace detail {
 
 vector< signed_transaction > wallet_api_impl::import_balance( string name_or_id, const vector<string>& wif_keys, bool broadcast )
@@ -3767,6 +3776,7 @@ vector< signed_transaction > wallet_api_impl::import_balance( string name_or_id,
          optional< private_key_type > key = wif_to_key( wif_key );
          FC_ASSERT( key.valid(), "Invalid private key" );
          fc::ecc::public_key pk = key->get_public_key();
+		 wlog("Pubkey ${k}", ("k", pk));
          addrs.push_back( pk );
          keys[addrs.back()] = *key;
          // see chain/balance_evaluator.cpp
@@ -3778,9 +3788,10 @@ vector< signed_transaction > wallet_api_impl::import_balance( string name_or_id,
          keys[addrs.back()] = *key;
          addrs.push_back( pts_address( pk, true, 0 ) );
          keys[addrs.back()] = *key;
+		 
       }
    }
-
+   wlog("PtsAccount ${k}", ("k", addrs));
    vector< balance_object > balances = _remote_db->get_balance_objects( addrs );
    wdump((balances));
    addrs.clear();

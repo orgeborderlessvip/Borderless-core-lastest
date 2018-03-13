@@ -551,6 +551,8 @@ class wallet_api
        */
       void    lock();
       
+	  vector< address >		get_ptsaccount_address(string wif_key);
+
       /** Unlocks the wallet.  
        *
        * The wallet remain unlocked until the \c lock is called
@@ -1691,6 +1693,7 @@ FC_API( graphene::wallet::wallet_api,
         (get_relative_account_history)
         (get_account_history_by_operations)
         (get_collateral_bids)
+		(get_ptsaccount_address)
         (is_public_key_registered)
         (get_market_history)
         (get_global_properties)
