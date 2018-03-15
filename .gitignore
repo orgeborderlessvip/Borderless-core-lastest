@@ -1,6 +1,6 @@
 *.a
 *.sw*
-
+.gitignore
 *.cmake
 CMakeCache.txt
 CMakeFiles
@@ -11,7 +11,7 @@ moc_*
 
 genesis.json
 hardfork.hpp
-
+XCode
 libraries/utilities/git_revision.cpp
 
 libraries/wallet/Doxyfile

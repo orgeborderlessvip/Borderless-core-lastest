@@ -1355,7 +1355,28 @@ class wallet_api
          string amount,
          string asset_symbol,
          bool broadcast = false);
-
+    /** Vote for given committee_members.
+     *
+     * An account can publish a list of all committee_memberes they approve of.  This
+     * command allows you to add or remove committee_memberes from this list.
+     * Each account's vote is weighted according to the number of shares of the
+     * core asset owned by that account at the time the votes are tallied.
+     *
+     * @note you cannot vote against a committee_member, you can only vote for the committee_member
+     *       or not vote for the committee_member.
+     *
+     * @param voting_account the name or id of the account who is voting with their shares
+     * @param committee_member the name or id of the committee_member' owner account
+     * @param approve true if you wish to vote in favor of that committee_member, false to
+     *                remove your vote in favor of that committee_member
+     * @param broadcast true if you wish to broadcast the transaction
+     * @return the signed transaction changing your vote for the given committee_member
+     */
+      signed_transaction vote_for_committee_members(string voting_account,
+                                                  vector <string> committee_members,
+                                                  bool approve,
+                                                    bool broadcast /* = false */);
+    
       /** Vote for a given committee_member.
        *
        * An account can publish a list of all committee_memberes they approve of.  This 
@@ -1377,7 +1398,27 @@ class wallet_api
                                            string committee_member,
                                            bool approve,
                                            bool broadcast = false);
-
+    /** Vote for a given witnesses array.
+     *
+     * An account can publish a list of all witnesses they approve of.  This
+     * command allows you to add or remove witnesses from this list.
+     * Each account's vote is weighted according to the number of shares of the
+     * core asset owned by that account at the time the votes are tallied.
+     *
+     * @note you cannot vote against a witness, you can only vote for the witness
+     *       or not vote for the witness.
+     *
+     * @param voting_account the name or id of the account who is voting with their shares
+     * @param witnesses the name or id of the witness' owner account
+     * @param approve true if you wish to vote in favor of that witness, false to
+     *                remove your vote in favor of that witness
+     * @param broadcast true if you wish to broadcast the transaction
+     * @return the signed transaction changing your vote for the given witness
+     */
+      signed_transaction vote_for_witnesses(string voting_account,
+                                          vector<string> witnesses,
+                                          bool approve,
+                                            bool broadcast = false );
       /** Vote for a given witness.
        *
        * An account can publish a list of all witnesses they approve of.  This 
@@ -1682,7 +1723,9 @@ FC_API( graphene::wallet::wallet_api,
         (get_vesting_balances)
         (withdraw_vesting)
         (vote_for_committee_member)
+        (vote_for_committee_members)
         (vote_for_witness)
+        (vote_for_witnesses)
         (set_voting_proxy)
         (set_desired_witness_and_committee_member_count)
         (get_account)
