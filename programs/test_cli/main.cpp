@@ -32,15 +32,17 @@ int main( int argc, char** argv )
     std::string str1;
     str1 = "ws://47.100.8.24:8056";
     object->init(str, str1);
-    
-//    while (true) {
-//        std::string str2;
-//        str2 = "info";
-//        std::string str3;
-//
-//        object->runCommand(0, str2, str3);
-//        std::cout << str3 << "\n";
-//    }
-    
+    int i = 0;
+    while (i < 5) {
+        std::string str2;
+        str2 = "info";
+        std::string str3;
+
+        object->runCommand(0, str2, str3);
+        std::cout << str3 << "\n";
+        
+        i ++;
+    }
+    object.reset();
     return 0;
 }

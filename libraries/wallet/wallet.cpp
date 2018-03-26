@@ -418,7 +418,7 @@ public:
    {
       try
       {
-         _remote_db->cancel_all_subscriptions();
+//         _remote_db->cancel_all_subscriptions();
       }
       catch (const fc::exception& e)
       {
