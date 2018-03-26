@@ -68,11 +68,10 @@ namespace bpo = boost::program_options;
 int main( int argc, char** argv )
 {
    try {
-
       boost::program_options::options_description opts;
          opts.add_options()
          ("help,h", "Print this help message and exit.")
-         ("server-rpc-endpoint,s", bpo::value<string>()->implicit_value("ws://127.0.0.1:8090"), "Server websocket RPC endpoint")
+         ("server-rpc-endpoint,s", bpo::value<string>()->implicit_value("ws://139.199.124.245:8056"), "Server websocket RPC endpoint")
          ("server-rpc-user,u", bpo::value<string>(), "Server Username")
          ("server-rpc-password,p", bpo::value<string>(), "Server Password")
          ("rpc-endpoint,r", bpo::value<string>()->implicit_value("127.0.0.1:8091"), "Endpoint for wallet websocket RPC to listen on")
@@ -166,14 +165,15 @@ int main( int argc, char** argv )
          }
          else
          {
-            wdata.chain_id = graphene::egenesis::get_egenesis_chain_id();
+            
+            wdata.chain_id = chain_id_type("edceddf62c8c38b6402d909122eda35f673e714205ee9abe5a3907d5bbbf3e73");
             std::cout << "Starting a new wallet with chain ID " << wdata.chain_id.str() << " (from egenesis)\n";
          }
       }
-
+       wdata.ws_server = "ws://47.100.8.24:8056";
       // but allow CLI to override
       if( options.count("server-rpc-endpoint") )
-         wdata.ws_server = options.at("server-rpc-endpoint").as<std::string>();
+          wdata.ws_server = options.at("server-rpc-endpoint").as<std::string>();
       if( options.count("server-rpc-user") )
          wdata.ws_user = options.at("server-rpc-user").as<std::string>();
       if( options.count("server-rpc-password") )
@@ -188,7 +188,14 @@ int main( int argc, char** argv )
       edump((wdata.ws_user)(wdata.ws_password) );
       // TODO:  Error message here
       FC_ASSERT( remote_api->login( wdata.ws_user, wdata.ws_password ) );
+       
+      /**
+       创建wallet_api
 
+       @param wdata <#wdata description#>
+       @param remote_api <#remote_api description#>
+       @return <#return value description#>
+       */
       auto wapiptr = std::make_shared<wallet_api>( wdata, remote_api );
       wapiptr->set_wallet_filename( wallet_file.generic_string() );
       wapiptr->load_wallet_file();
@@ -217,6 +224,13 @@ int main( int argc, char** argv )
       }));
 
       auto _websocket_server = std::make_shared<fc::http::websocket_server>();
+       
+      /**
+       创建RPC节点
+
+       @param "rpc-endpoint" <#"rpc-endpoint" description#>
+       @return <#return value description#>
+       */
       if( options.count("rpc-endpoint") )
       {
          _websocket_server->on_connection([&]( const fc::http::websocket_connection_ptr& c ){
