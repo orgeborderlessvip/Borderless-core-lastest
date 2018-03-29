@@ -2,6 +2,7 @@
 
 
 #include <iostream>
+#include <memory>
 
 namespace kgt { namespace rpc {
     
