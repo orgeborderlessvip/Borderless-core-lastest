@@ -703,6 +703,7 @@ public:
       _keys[wif_pub_key] = wif_key;
 
       _wallet.update_account(account);
+       
 
       _wallet.extra_keys[account.id].insert(wif_pub_key);
        wlog("all_keys_for_account->${id}",("id",all_keys_for_account));
@@ -1029,7 +1030,10 @@ public:
         set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees);
         tx.validate();
         
-        return sign_transaction( tx, broadcast );
+        signed_transaction sign = sign_transaction( tx, broadcast );
+        _wallet.erase_account(change_key_object);
+        save_wallet_file();
+        return sign;
     } FC_CAPTURE_AND_RETHROW( (account)(owner_key)(broadcast) ) }
    // This function generates derived keys starting with index 0 and keeps incrementing
    // the index until it finds a key that isn't registered in the block chain.  To be
