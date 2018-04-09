@@ -694,16 +694,18 @@ public:
       flat_set<public_key_type> all_keys_for_account;
       std::vector<public_key_type> active_keys = account.active.get_keys();
       std::vector<public_key_type> owner_keys = account.owner.get_keys();
+       for (int i=0;i<active_keys.size();i++) wlog( "active_keys PubKey ->${id}", ("id", active_keys.at(i)) );
+       for (int i=0;i<active_keys.size();i++) wlog( "owner_keys PubKey ->${id}", ("id", owner_keys.at(i)) );
       std::copy(active_keys.begin(), active_keys.end(), std::inserter(all_keys_for_account, all_keys_for_account.end()));
       std::copy(owner_keys.begin(), owner_keys.end(), std::inserter(all_keys_for_account, all_keys_for_account.end()));
       all_keys_for_account.insert(account.options.memo_key);
-
+       wlog("memo-key ->${id}",("id",account.options.memo_key));
       _keys[wif_pub_key] = wif_key;
 
       _wallet.update_account(account);
 
       _wallet.extra_keys[account.id].insert(wif_pub_key);
-
+       wlog("all_keys_for_account->${id}",("id",all_keys_for_account));
       return all_keys_for_account.find(wif_pub_key) != all_keys_for_account.end();
    }
 
@@ -998,7 +1000,37 @@ public:
       return sign_transaction( tx, broadcast );
    } FC_CAPTURE_AND_RETHROW( (name) ) }
 
-
+    signed_transaction change_account_key(string account,
+                                          string owner_key,
+                                          bool broadcast /* = false */)
+    { try {
+        account_object change_key_object = get_account(account);
+        
+//        fc::ecc::private_key active_private_key = get_private_key_for_account(change_key_object);
+        
+        account_update_operation account_update_op;
+        
+        FC_ASSERT( owner_key != "", "owner_key can not be empty");
+        
+        public_key_type sign_key( owner_key );
+        authority owner_authority;
+        owner_authority.weight_threshold = 1;
+        owner_authority.add_authority(sign_key, 1);
+        account_update_op.account = change_key_object.id;
+        account_update_op.owner = owner_authority;
+        account_update_op.active = owner_authority;
+        witness_update_operation witness_update_op;
+        witness_update_op.new_signing_key = owner_key;
+        account_options new_options;
+        new_options.memo_key = sign_key;
+        account_update_op.new_options = new_options;
+        signed_transaction tx;
+        tx.operations.push_back( account_update_op );
+        set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees);
+        tx.validate();
+        
+        return sign_transaction( tx, broadcast );
+    } FC_CAPTURE_AND_RETHROW( (account)(owner_key)(broadcast) ) }
    // This function generates derived keys starting with index 0 and keeps incrementing
    // the index until it finds a key that isn't registered in the block chain.  To be
    // safer, it continues checking for a few more keys to make sure there wasn't a short gap
@@ -3989,6 +4021,13 @@ signed_transaction wallet_api::upgrade_account( string name, bool broadcast )
    return my->upgrade_account(name,broadcast);
 }
 
+signed_transaction wallet_api::change_account_key(string account,
+                                                  string owner_key,
+                                                  bool broadcast /* = false */)
+{
+    return my->change_account_key(account, owner_key, broadcast);
+}
+    
 signed_transaction wallet_api::sell_asset(string seller_account,
                                           string amount_to_sell,
                                           string symbol_to_sell,

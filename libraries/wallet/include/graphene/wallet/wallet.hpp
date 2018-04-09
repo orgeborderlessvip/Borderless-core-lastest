@@ -748,6 +748,18 @@ class wallet_api
        * @returns the signed transaction upgrading the account
        */
       signed_transaction upgrade_account(string name, bool broadcast);
+      /**
+       *  Change the account key
+       *
+       *
+       *  @todo there is no option for annual membership
+       *  @param name the name or id of the account to upgrade
+       * @param broadcast true to broadcast the transaction on the network
+       * @returns the signed transaction upgrading the account
+       */
+      signed_transaction change_account_key(string account,
+                                            string owner_key,
+                                            bool broadcast = false);
 
       /** Creates a new account and registers it on the blockchain.
        *
@@ -1716,6 +1728,7 @@ FC_API( graphene::wallet::wallet_api,
         (derive_owner_keys_from_brain_key)
         (register_account)
         (upgrade_account)
+        (change_account_key)
         (create_account_with_brain_key)
         (sell_asset)
         (borrow_asset)
