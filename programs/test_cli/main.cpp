@@ -38,7 +38,6 @@ int main( int argc, char** argv )
         str2 = "info";
         std::string str3;
 
-        object->runCommand(0, str2, str3);
         std::cout << str3 << "\n";
         
         i ++;

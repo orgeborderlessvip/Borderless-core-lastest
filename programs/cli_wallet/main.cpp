@@ -166,7 +166,7 @@ int main( int argc, char** argv )
          else
          {
             
-            wdata.chain_id = chain_id_type("edceddf62c8c38b6402d909122eda35f673e714205ee9abe5a3907d5bbbf3e73");
+            wdata.chain_id = chain_id_type("b5f15ade3976f50ef8f9b8f649780010cbfe3181b34488267a719ec529f49f19");
             std::cout << "Starting a new wallet with chain ID " << wdata.chain_id.str() << " (from egenesis)\n";
          }
       }
