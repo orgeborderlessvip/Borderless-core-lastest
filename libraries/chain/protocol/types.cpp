@@ -49,7 +49,7 @@ namespace graphene { namespace chain {
        try
        {
            if( is_valid_v1( base58str ) )
-               prefix = std::string( "KGT" );
+               prefix = std::string( "BDS" );
        }
        catch( ... )
        {
