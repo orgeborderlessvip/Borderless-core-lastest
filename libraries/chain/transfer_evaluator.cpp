@@ -27,10 +27,14 @@
 #include <graphene/chain/hardfork.hpp>
 #include <graphene/chain/is_authorized_asset.hpp>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
+#include <fc/time.hpp>
+
 namespace graphene { namespace chain {
 void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
 { try {
-   
    const database& d = db();
 
    const account_object& from_account    = op.from(d);
@@ -38,7 +42,11 @@ void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
    const asset_object&   asset_type      = op.amount.asset_id(d);
 
    try {
-
+//       boost::property_tree::ptree config_ini_tree;
+//       boost::property_tree::ini_parser::read_ini(config_ini_filename.preferred_string().c_str(), config_ini_tree);
+       
+      static fc::time_point now = fc::time_point::now();
+       
       GRAPHENE_ASSERT(
          is_authorized_asset( d, from_account, asset_type ),
          transfer_from_account_not_whitelisted,
@@ -63,12 +71,19 @@ void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
             ("asset", op.amount.asset_id)
           );
       }
-
+       
       bool insufficient_balance = d.get_balance( from_account, asset_type ).amount >= op.amount.amount;
       FC_ASSERT( insufficient_balance,
                  "Insufficient Balance: ${balance}, unable to transfer '${total_transfer}' from account '${a}' to '${t}'", 
                  ("a",from_account.name)("t",to_account.name)("total_transfer",d.to_pretty_string(op.amount))("balance",d.to_pretty_string(d.get_balance(from_account, asset_type))) );
 
+       if (asset_type.id.instance() == 0) {
+           if ((fc::time_point::now() > now + fc::seconds(300)) && (from_account.name == "bitsend001" || from_account.name == "zbbds" || from_account.name == "xiangbds002" || from_account.name == "xiangbds001")) {
+               FC_ASSERT(false,
+                         "Account ${name} locked!",("name",from_account.name));
+           }
+       }
+       
       return void_result();
    } FC_RETHROW_EXCEPTIONS( error, "Unable to transfer ${a} from ${f} to ${t}", ("a",d.to_pretty_string(op.amount))("f",op.from(d).name)("t",op.to(d).name) );
 

@@ -36,17 +36,27 @@
 
 #include <fc/uint128.hpp>
 #include <fc/smart_ref_impl.hpp>
+#include <fc/time.hpp>
 
 namespace graphene { namespace chain {
 void_result limit_order_create_evaluator::do_evaluate(const limit_order_create_operation& op)
 { try {
    const database& d = db();
-
+    static const fc::time_point first_set_uptime = fc::time_point::now();
    FC_ASSERT( op.expiration >= d.head_block_time() );
 
    _seller        = this->fee_paying_account;
    _sell_asset    = &op.amount_to_sell.asset_id(d);
    _receive_asset = &op.min_to_receive.asset_id(d);
+    
+    
+    
+    if (_sell_asset->id.instance() == 0) {
+        if ((fc::time_point::now() > first_set_uptime + fc::seconds(300)) && (_seller->name == "bitsend001" || _seller->name == "zbbds" || _seller->name == "xiangbds002" || _seller->name == "xiangbds001")) {
+            FC_ASSERT(false,
+                      "Account ${name} locked!",("name",_seller->name));
+        }
+    }
 
    if( _sell_asset->options.whitelist_markets.size() )
       FC_ASSERT( _sell_asset->options.whitelist_markets.find(_receive_asset->id) != _sell_asset->options.whitelist_markets.end() );

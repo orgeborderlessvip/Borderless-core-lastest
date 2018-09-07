@@ -95,6 +95,7 @@ void transaction::set_reference_block( const block_id_type& reference_block )
 
 void transaction::get_required_authorities( flat_set<account_id_type>& active, flat_set<account_id_type>& owner, vector<authority>& other )const
 {
+    
    for( const auto& op : operations )
       operation_get_required_authorities( op, active, owner, other );
    for( const auto& account : owner )

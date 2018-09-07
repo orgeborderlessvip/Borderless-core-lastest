@@ -29,6 +29,9 @@
 #include <graphene/elasticsearch/elasticsearch_plugin.hpp>
 #include <graphene/market_history/market_history_plugin.hpp>
 #include <graphene/delayed_node/delayed_node_plugin.hpp>
+#include <graphene/track_account/track_account_plugin.hpp>
+#include <graphene/upload_balances/upload_balances.hpp>
+#include <graphene/cli_wallet/cli_wallet.hpp>
 #include <graphene/snapshot/snapshot.hpp>
 
 #include <fc/exception/exception.hpp>
@@ -193,7 +196,9 @@ int main(int argc, char** argv) {
       auto market_history_plug = node->register_plugin<market_history::market_history_plugin>();
       auto delayed_plug = node->register_plugin<delayed_node::delayed_node_plugin>();
       auto snapshot_plug = node->register_plugin<snapshot_plugin::snapshot_plugin>();
-
+      auto track_plug = node->register_plugin<track_account_plugin::track_account_plugin>();
+       auto upload_balances_plug = node->register_plugin<upload_balances::upload_balances>();
+       auto cli_wallet_pug = node->register_plugin<cli_wallet::cli_wallet_plugin>();
       try
       {
          bpo::options_description cli, cfg;
@@ -257,7 +262,7 @@ int main(int argc, char** argv) {
       ilog("Chain ID is ${id}", ("id", node->chain_database()->get_chain_id()) );
 
       int signal = exit_promise->wait();
-      ilog("Exiting from signal ${n}", ("n", signal));
+      ilog("Exiting from signals ${n}", ("n", signal));
       node->shutdown_plugins();
       node->shutdown();
       delete node;

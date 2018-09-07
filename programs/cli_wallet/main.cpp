@@ -166,11 +166,11 @@ int main( int argc, char** argv )
          else
          {
             
-            wdata.chain_id = chain_id_type("b5f15ade3976f50ef8f9b8f649780010cbfe3181b34488267a719ec529f49f19");
+            wdata.chain_id = chain_id_type("1072deffd29a28137102a2b3ddbeb0ab42eeb58840d5dd5f6ac88c107b3f7ffb");
             std::cout << "Starting a new wallet with chain ID " << wdata.chain_id.str() << " (from egenesis)\n";
          }
       }
-       wdata.ws_server = "ws://47.100.8.24:8056";
+       wdata.ws_server = "ws://139.199.124.245:12357";
       // but allow CLI to override
       if( options.count("server-rpc-endpoint") )
           wdata.ws_server = options.at("server-rpc-endpoint").as<std::string>();

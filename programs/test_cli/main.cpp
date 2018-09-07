@@ -22,7 +22,9 @@
  * THE SOFTWARE.
  */
 #include <cli/cli.hpp>
-
+#include <fc/fwd_impl.hpp>
+#include <secp256k1.h>
+#include <fc/crypto/elliptic.hpp>
 
 int main( int argc, char** argv )
 {
